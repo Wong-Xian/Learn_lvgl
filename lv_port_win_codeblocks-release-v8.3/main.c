@@ -11,8 +11,9 @@
 #include <unistd.h>
 
 #include "lvgl/lvgl.h"
-#include "lvgl/demos/widgets/lv_demo_widgets.h"
 #include "lv_drivers/win32drv/win32drv.h"
+
+#include "mygui.h"
 
 #include <windows.h>
 
@@ -28,8 +29,8 @@
 /**********************
  *  STATIC PROTOTYPES
  **********************/
-static void hal_init(void);
-static int tick_thread(void *data);
+//static void hal_init(void);
+//static int tick_thread(void *data);
 
 /**********************
  *  STATIC VARIABLES
@@ -51,10 +52,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLi
     lv_win32_init(hInstance, SW_SHOWNORMAL, 800, 480, NULL);
 
     /*Output prompt information to the console, you can also use printf() to print directly*/
-    LV_LOG_USER("LVGL initialization completed!");
+    LV_LOG_USER("LVGL initialization completed!");  // 终端输出的内容
 
-    /*Run the demo*/
-    lv_demo_widgets();
+    mygui();
 
     while(!lv_win32_quit_signal) {
         /* Periodically call the lv_task handler.
