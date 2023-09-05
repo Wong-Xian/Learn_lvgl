@@ -4,7 +4,9 @@
 void mygui()
 {
     //Learn_Obj();
-    Learn_Arc();
+    //Learn_Arc();
+    //Learn_Animimg();
+    Learn_Bar();
 }
 
 /* Make Object Draggable */
@@ -58,7 +60,54 @@ void Learn_Arc()
     lv_arc_set_range(arc, 0, 100);                  // 设置 arc 指示的值范围
     lv_arc_set_value(arc, 35);
 
-    lv_arc_set_bg_angles(arc, 0, 180);              // 设置 arc 的角度
+    lv_arc_set_bg_angles(arc, 120, 60);              // 设置 arc 的角度
 }
 
+void Learn_Animimg()
+{
+    LV_IMG_DECLARE(animimg001)
+    LV_IMG_DECLARE(animimg002)
+    LV_IMG_DECLARE(animimg003)
+
+    static const lv_img_dsc_t * anim_imgs[3] = {
+        &animimg001,
+        &animimg002,
+        &animimg003,
+    };
+
+
+    lv_obj_t * animimg0 = lv_animimg_create(lv_scr_act());
+    lv_obj_center(animimg0);
+    lv_animimg_set_src(animimg0, (const void **) anim_imgs, 3);
+    lv_animimg_set_duration(animimg0, 1000);
+    lv_animimg_set_repeat_count(animimg0, LV_ANIM_REPEAT_INFINITE);
+    lv_animimg_start(animimg0);
+
+}
+
+void Learn_Bar()
+{
+    lv_obj_t* bar = lv_bar_create(lv_scr_act());    // 创建 bar 对象
+    lv_obj_set_size(bar, 250, 60);                  // 设置 bar 大小
+    lv_obj_align(bar, LV_ALIGN_LEFT_MID, 0, 0);     // 设置 bar 位置
+    lv_bar_set_value(bar, 30, LV_ANIM_ON);          // 设置初始值
+
+    // 自定义 style
+    static lv_style_t bg_style;     // 定义背景风格
+    static lv_style_t indic_style;  // 定义指示器风格
+
+    // 初始化背景风格
+    lv_style_init (&bg_style);
+    lv_style_set_border_color (&bg_style, lv_palette_main(LV_PALETTE_GREEN));// 设置背景的颜色
+    lv_style_set_border_width (&bg_style, 3);   // 边界线条的宽度
+    lv_style_set_pad_all(&bg_style, 6);         // 让上下左右边界都缩小6个像素？
+    lv_style_set_radius(&style_bg, 6);          // 模糊吗？
+    lv_style_set_anim_time(&style_bg, 1000);    // 动画时间间隔
+
+    //初始化指示器风格
+    lv_style_init(&style_indic);
+    lv_style_set_bg_opa(&style_indic, LV_OPA_COVER);
+    lv_style_set_bg_color(&style_indic, lv_palette_main(LV_PALETTE_GREEN));
+    lv_style_set_radius(&style_indic, 3);
+}
 
