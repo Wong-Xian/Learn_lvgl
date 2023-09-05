@@ -6,7 +6,9 @@ void mygui()
     //Learn_Obj();
     //Learn_Arc();
     //Learn_Animimg();
-    Learn_Bar();
+    //Learn_Bar();
+    int bc = 25;
+    Disp_Battery(bc);
 }
 
 /* Make Object Draggable */
@@ -87,12 +89,7 @@ void Learn_Animimg()
 
 void Learn_Bar()
 {
-    lv_obj_t* bar = lv_bar_create(lv_scr_act());    // 创建 bar 对象
-    lv_obj_set_size(bar, 250, 60);                  // 设置 bar 大小
-    lv_obj_align(bar, LV_ALIGN_LEFT_MID, 0, 0);     // 设置 bar 位置
-    lv_bar_set_value(bar, 30, LV_ANIM_ON);          // 设置初始值
-
-    // 自定义 style
+    /************ 自定义 style1 ************/
     static lv_style_t bg_style;     // 定义背景风格
     static lv_style_t indic_style;  // 定义指示器风格
 
@@ -101,13 +98,94 @@ void Learn_Bar()
     lv_style_set_border_color (&bg_style, lv_palette_main(LV_PALETTE_GREEN));// 设置背景的颜色
     lv_style_set_border_width (&bg_style, 3);   // 边界线条的宽度
     lv_style_set_pad_all(&bg_style, 6);         // 让上下左右边界都缩小6个像素？
-    lv_style_set_radius(&style_bg, 6);          // 模糊吗？
-    lv_style_set_anim_time(&style_bg, 1000);    // 动画时间间隔
+    lv_style_set_radius(&bg_style, 16);          // 两端是弧度
+    lv_style_set_anim_time(&bg_style, 2000);    // 动画时间间隔，让进度条有动画
 
-    //初始化指示器风格
-    lv_style_init(&style_indic);
-    lv_style_set_bg_opa(&style_indic, LV_OPA_COVER);
-    lv_style_set_bg_color(&style_indic, lv_palette_main(LV_PALETTE_GREEN));
-    lv_style_set_radius(&style_indic, 3);
+    // 初始化指示器风格
+    lv_style_init(&indic_style);
+    lv_style_set_bg_opa(&indic_style, LV_OPA_COVER);
+    lv_style_set_bg_color(&indic_style, lv_palette_main(LV_PALETTE_GREEN));
+    lv_style_set_radius(&indic_style, 16);
+
+    // 把自定义风格应用到新建的 bar1 上
+    lv_obj_t* bar1 = lv_bar_create(lv_scr_act());    // 创建 bar 对象
+    lv_obj_remove_style_all(bar1);
+    lv_obj_add_style(bar1, &bg_style, LV_PART_MAIN);
+    lv_obj_add_style(bar1, &indic_style, LV_PART_INDICATOR);
+    lv_obj_set_size(bar1, 250, 60);                  // 设置 bar 大小
+    lv_obj_align(bar1, LV_ALIGN_LEFT_MID, 100, 0);   // 设置 bar 位置
+    lv_bar_set_value(bar1, 30, LV_ANIM_ON);          // 设置初始值
+
+
+    /*********** 自定义 style2 ***********/
+    static lv_style_t bg_style2;     // 定义背景风格
+    static lv_style_t indic_style2;  // 定义指示器风格
+
+    // 初始化背景风格
+    lv_style_init (&bg_style2);
+    lv_style_set_border_color (&bg_style2, lv_palette_main(LV_PALETTE_GREEN));// 设置背景的颜色
+    lv_style_set_border_width (&bg_style2, 3);   // 边界线条的宽度
+    lv_style_set_pad_all(&bg_style2, 16);        // 让上下左右边界都缩小16个像素
+    lv_style_set_radius(&bg_style2, 26);         // 两端弧度
+    lv_style_set_anim_time(&bg_style2, 2000);    // 动画时间间隔，让进度条有动画
+
+    // 初始化指示器风格
+    lv_style_init(&indic_style2);
+    lv_style_set_bg_opa(&indic_style2, LV_OPA_COVER);
+    lv_style_set_bg_color(&indic_style2, lv_palette_main(LV_PALETTE_GREEN));
+    lv_style_set_radius(&indic_style2, 3);
+
+    // 把自定义风格应用到新建的 bar2 上
+    lv_obj_t * bar2 = lv_bar_create(lv_scr_act());
+    lv_obj_remove_style_all(bar2);  /*To have a clean start*/
+    lv_obj_add_style(bar2, &bg_style2, LV_PART_MAIN);
+    lv_obj_add_style(bar2, &indic_style2, LV_PART_INDICATOR);
+    lv_obj_set_size(bar2, 250, 60);
+    lv_obj_align(bar2, LV_ALIGN_RIGHT_MID, -100, 0);
+    lv_bar_set_value(bar2, 30, LV_ANIM_ON);
+}
+
+void Disp_Battery(int battery_capacity)
+{
+    /********** 画电池主干 **********/
+
+    // 1. 创建 style
+    static lv_style_t bg_style;
+    lv_style_init(&bg_style);
+    lv_style_set_border_color(&bg_style, lv_palette_main(LV_PALETTE_GREEN));
+    lv_style_set_border_width (&bg_style, 3);   // 边界线条的宽度
+    lv_style_set_pad_all(&bg_style, 7);         // 让上下左右边界都缩小6个像素？
+    lv_style_set_radius(&bg_style, 20);         // 两端是弧度
+    lv_style_set_anim_time(&bg_style, 2000);    // 动画时间间隔，让进度条有动画
+
+    static lv_style_t indic_style;
+    lv_style_init(&indic_style);
+    lv_style_set_bg_opa(&indic_style, LV_OPA_COVER);
+    lv_style_set_bg_color(&indic_style, lv_palette_main(LV_PALETTE_GREEN));
+    lv_style_set_radius(&indic_style, 20);
+
+    // 2. 创建 bar 对象
+    lv_obj_t * bar = lv_bar_create(lv_scr_act());
+    lv_obj_remove_style_all(bar);
+    lv_obj_add_style(bar, &bg_style, LV_PART_MAIN);
+    lv_obj_add_style(bar, &indic_style, LV_PART_INDICATOR);
+    lv_obj_set_size(bar, 250, 80);
+    lv_obj_align(bar, LV_ALIGN_CENTER, 0, 0);
+    lv_bar_set_value(bar, battery_capacity, LV_ANIM_ON);
+
+    /********** 画电池正极 **********/
+
+    // 1. 创建 style
+    static lv_style_t little_style;
+    lv_style_init(&little_style);
+    lv_style_set_bg_color(&little_style, lv_palette_main(LV_PALETTE_GREEN));
+    lv_style_set_border_color(&little_style, lv_palette_main(LV_PALETTE_GREEN));
+
+    // 2. 创建 bar 对象
+    lv_obj_t* head = lv_bar_create(lv_scr_act());
+    lv_obj_add_style(head, &little_style, LV_PART_INDICATOR);
+    lv_obj_set_size(head, 10, 40);
+    lv_bar_set_value(head, 100, LV_ANIM_OFF);
+    lv_obj_align(head, LV_ALIGN_CENTER, 128, 0);
 }
 

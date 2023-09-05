@@ -11,4 +11,6 @@ void Learn_Animimg();
 
 void Learn_Bar();
 
+void Disp_Battery(int battery_capacity);
+
 #endif // _MY_GUI_
