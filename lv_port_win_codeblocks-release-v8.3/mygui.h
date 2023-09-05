@@ -13,4 +13,7 @@ void Learn_Bar();
 
 void Disp_Battery(int battery_capacity);
 
+void Temp_Bar();
+
+
 #endif // _MY_GUI_
