@@ -250,19 +250,21 @@ static void set_value(void * bar, int32_t v)
     lv_bar_set_value(bar, v, LV_ANIM_OFF);
 }
 
-static void event_cb(lv_event_t* e)
+static void event_cb(lv_event_t* e) // 该函数改变标签的【数值】和【位置】
 {
     lv_obj_draw_part_dsc_t * dsc = lv_event_get_draw_part_dsc(e);// 获取传入事件的描述符
     if(dsc->part != LV_PART_INDICATOR) return;  // 若不是indicator触发的事件则返回
 
     lv_obj_t * obj = lv_event_get_target(e);    // 获取传入对象
 
-    lv_draw_label_dsc_t label_dsc;
-    lv_draw_label_dsc_init(&label_dsc);
-    label_dsc.font = LV_FONT_DEFAULT;
+    lv_draw_label_dsc_t label_dsc;      // 创建 标签描述符对象
+    lv_draw_label_dsc_init(&label_dsc); // 初始化 描述符对象
+    label_dsc.font = LV_FONT_DEFAULT;   // 设置标签为默认字体
 
-    char buf[8];
+    char buf[8];    // 开辟一段内存空间
+
     lv_snprintf(buf, sizeof(buf), "%d", (int)lv_bar_get_value(obj));
+    /* 上一行的内容把obj的值格式化写入buf中 */
 
     lv_point_t txt_size;
     lv_txt_get_size(&txt_size, buf,
@@ -270,9 +272,9 @@ static void event_cb(lv_event_t* e)
                     label_dsc.letter_space,
                     label_dsc.line_space,
                     LV_COORD_MAX,
-                    label_dsc.flag);
+                    label_dsc.flag);// 获取字体参数写入到 txt_size 中
 
-    lv_area_t txt_area;
+    lv_area_t txt_area; // 定义对象，以下代码做 位置、大小 判断
     /*If the indicator is long enough put the text inside on the right*/
     if(lv_area_get_width(dsc->draw_area) > txt_size.x + 20) {
         txt_area.x2 = dsc->draw_area->x2 - 5;
@@ -306,7 +308,7 @@ void lv_bar_6()
     lv_anim_init(&a);
     lv_anim_set_var(&a, bar);
     lv_anim_set_values(&a, 0, 100);
-    lv_anim_set_exec_cb(&a, set_value);
+    lv_anim_set_exec_cb(&a, set_value); // 设置新的值
     lv_anim_set_time(&a, 2000);
     lv_anim_set_playback_time(&a, 2000);
     lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
