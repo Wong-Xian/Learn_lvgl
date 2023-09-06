@@ -15,5 +15,9 @@ void Disp_Battery(int battery_capacity);
 
 void Temp_Bar();
 
+void lv_bar_4();
+
+void lv_bar_6();
+
 
 #endif // _MY_GUI_
