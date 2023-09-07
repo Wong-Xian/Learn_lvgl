@@ -7,11 +7,11 @@ void mygui()
     //Learn_Arc();
     //Learn_Animimg();
     //Learn_Bar();
-    //int bc = 25;
-    //Disp_Battery(bc);
+    int bc = 25;
+    Disp_Battery(bc);
     //Temp_Bar();
     //lv_bar_4();
-    lv_bar_6();
+    //lv_bar_6();
 }
 
 /* Make Object Draggable */
@@ -148,8 +148,61 @@ void Learn_Bar()
     lv_bar_set_value(bar2, 30, LV_ANIM_ON);
 }
 
+static void set_value(void * bar, int32_t v)
+{
+    lv_bar_set_value(bar, v, LV_ANIM_OFF);
+}
+
+static void event_cb(lv_event_t* e) // 该函数改变标签的【数值】和【位置】
+{
+    lv_obj_draw_part_dsc_t * dsc = lv_event_get_draw_part_dsc(e);// 获取传入事件的描述符
+    if(dsc->part != LV_PART_INDICATOR) return;  // 若不是indicator触发的事件则返回
+
+    lv_obj_t * obj = lv_event_get_target(e);    // 获取传入对象
+
+    lv_draw_label_dsc_t label_dsc;              // 创建 标签描述符对象
+    lv_draw_label_dsc_init(&label_dsc);         // 初始化 描述符对象
+    label_dsc.font = &lv_font_montserrat_24;    // 设置标签为24号字体
+
+
+    char buf[8];    // 开辟一段内存空间
+
+    lv_snprintf(buf, sizeof(buf), "%d", (int)lv_bar_get_value(obj));
+    /* 上一行的内容把obj的值格式化写入buf中 */
+
+    lv_point_t txt_size;
+    lv_txt_get_size(&txt_size, buf,
+                    label_dsc.font,
+                    label_dsc.letter_space,
+                    label_dsc.line_space,
+                    LV_COORD_MAX,
+                    label_dsc.flag);// 获取字体参数写入到 txt_size 中
+
+    lv_area_t txt_area; // 定义对象，以下代码做 位置、大小 判断
+    /*If the indicator is long enough put the text inside on the right*/
+    if(lv_area_get_width(dsc->draw_area) > txt_size.x + 20) {
+        txt_area.x2 = dsc->draw_area->x2 - 5;
+        txt_area.x1 = txt_area.x2 - txt_size.x + 1;
+        label_dsc.color = lv_color_white();
+    }
+    /*If the indicator is still short put the text out of it on the right*/
+    else {
+        txt_area.x1 = dsc->draw_area->x2 + 5;
+        txt_area.x2 = txt_area.x1 + txt_size.x - 1;
+        label_dsc.color = lv_color_black();
+    }
+
+    txt_area.y1 = dsc->draw_area->y1 + (lv_area_get_height(dsc->draw_area) - txt_size.y) / 2;
+    txt_area.y2 = txt_area.y1 + txt_size.y - 1;
+
+    lv_draw_label(dsc->draw_ctx, &label_dsc, &txt_area, buf, NULL);
+}
+
 void Disp_Battery(int battery_capacity)
 {
+    lv_obj_t* battery = lv_obj_create(lv_scr_act());    // 创建电池对象
+    lv_obj_set_size(battery, 310, 150);
+
     /********** 画电池主干 **********/
 
     // 1. 创建 style
@@ -159,7 +212,7 @@ void Disp_Battery(int battery_capacity)
     lv_style_set_border_width (&bg_style, 3);   // 边界线条的宽度
     lv_style_set_pad_all(&bg_style, 7);         // 让上下左右边界都缩小6个像素？
     lv_style_set_radius(&bg_style, 20);         // 两端是弧度
-    lv_style_set_anim_time(&bg_style, 2000);    // 动画时间间隔，让进度条有动画
+    lv_style_set_anim_time(&bg_style, 1000);    // 动画时间间隔，让进度条有动画
 
     static lv_style_t indic_style;
     lv_style_init(&indic_style);
@@ -168,13 +221,14 @@ void Disp_Battery(int battery_capacity)
     lv_style_set_radius(&indic_style, 20);
 
     // 2. 创建 bar 对象
-    lv_obj_t * bar = lv_bar_create(lv_scr_act());
-    lv_obj_remove_style_all(bar);
-    lv_obj_add_style(bar, &bg_style, LV_PART_MAIN);
-    lv_obj_add_style(bar, &indic_style, LV_PART_INDICATOR);
-    lv_obj_set_size(bar, 250, 80);
-    lv_obj_align(bar, LV_ALIGN_CENTER, 0, 0);
-    lv_bar_set_value(bar, battery_capacity, LV_ANIM_ON);
+    lv_obj_t * body = lv_bar_create(battery);
+    lv_obj_remove_style_all(body);
+    lv_obj_add_style(body, &bg_style, LV_PART_MAIN);
+    lv_obj_add_style(body, &indic_style, LV_PART_INDICATOR);
+    lv_obj_add_event_cb(body, event_cb, LV_EVENT_DRAW_PART_END, NULL);
+    lv_obj_set_size(body, 250, 80);
+    lv_obj_align(body, LV_ALIGN_CENTER, 0, 0);
+    lv_bar_set_value(body, battery_capacity, LV_ANIM_ON);
 
     /********** 画电池正极 **********/
 
@@ -185,7 +239,7 @@ void Disp_Battery(int battery_capacity)
     lv_style_set_border_color(&little_style, lv_palette_main(LV_PALETTE_GREEN));
 
     // 2. 创建 bar 对象
-    lv_obj_t* head = lv_bar_create(lv_scr_act());
+    lv_obj_t* head = lv_bar_create(battery);
     lv_obj_add_style(head, &little_style, LV_PART_INDICATOR);
     lv_obj_set_size(head, 10, 40);
     lv_bar_set_value(head, 100, LV_ANIM_OFF);
@@ -245,54 +299,6 @@ void lv_bar_4()
     lv_bar_set_start_value(bar, 20, LV_ANIM_ON);
 }
 
-static void set_value(void * bar, int32_t v)
-{
-    lv_bar_set_value(bar, v, LV_ANIM_OFF);
-}
-
-static void event_cb(lv_event_t* e) // 该函数改变标签的【数值】和【位置】
-{
-    lv_obj_draw_part_dsc_t * dsc = lv_event_get_draw_part_dsc(e);// 获取传入事件的描述符
-    if(dsc->part != LV_PART_INDICATOR) return;  // 若不是indicator触发的事件则返回
-
-    lv_obj_t * obj = lv_event_get_target(e);    // 获取传入对象
-
-    lv_draw_label_dsc_t label_dsc;      // 创建 标签描述符对象
-    lv_draw_label_dsc_init(&label_dsc); // 初始化 描述符对象
-    label_dsc.font = LV_FONT_DEFAULT;   // 设置标签为默认字体
-
-    char buf[8];    // 开辟一段内存空间
-
-    lv_snprintf(buf, sizeof(buf), "%d", (int)lv_bar_get_value(obj));
-    /* 上一行的内容把obj的值格式化写入buf中 */
-
-    lv_point_t txt_size;
-    lv_txt_get_size(&txt_size, buf,
-                    label_dsc.font,
-                    label_dsc.letter_space,
-                    label_dsc.line_space,
-                    LV_COORD_MAX,
-                    label_dsc.flag);// 获取字体参数写入到 txt_size 中
-
-    lv_area_t txt_area; // 定义对象，以下代码做 位置、大小 判断
-    /*If the indicator is long enough put the text inside on the right*/
-    if(lv_area_get_width(dsc->draw_area) > txt_size.x + 20) {
-        txt_area.x2 = dsc->draw_area->x2 - 5;
-        txt_area.x1 = txt_area.x2 - txt_size.x + 1;
-        label_dsc.color = lv_color_white();
-    }
-    /*If the indicator is still short put the text out of it on the right*/
-    else {
-        txt_area.x1 = dsc->draw_area->x2 + 5;
-        txt_area.x2 = txt_area.x1 + txt_size.x - 1;
-        label_dsc.color = lv_color_black();
-    }
-
-    txt_area.y1 = dsc->draw_area->y1 + (lv_area_get_height(dsc->draw_area) - txt_size.y) / 2;
-    txt_area.y2 = txt_area.y1 + txt_size.y - 1;
-
-    lv_draw_label(dsc->draw_ctx, &label_dsc, &txt_area, buf, NULL);
-}
 
 /**
  * Custom drawer on the bar to display the current value
