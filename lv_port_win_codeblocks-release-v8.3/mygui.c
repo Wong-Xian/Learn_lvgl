@@ -1,13 +1,14 @@
 #include "mygui.h"
 #include "lvgl.h"
 
-void mygui()
+
+
+void mygui(int bc)
 {
     //Learn_Obj();
     //Learn_Arc();
     //Learn_Animimg();
     //Learn_Bar();
-    int bc = 25;
     Disp_Battery(bc);
     //Temp_Bar();
     //lv_bar_4();
@@ -200,8 +201,9 @@ static void event_cb(lv_event_t* e) // 该函数改变标签的【数值】和【位置】
 
 void Disp_Battery(int battery_capacity)
 {
-    lv_obj_t* battery = lv_obj_create(lv_scr_act());    // 创建电池对象
+    lv_obj_t* battery = lv_obj_create(lv_scr_act());
     lv_obj_set_size(battery, 310, 150);
+    lv_obj_set_align(battery, LV_ALIGN_CENTER);
 
     /********** 画电池主干 **********/
 
@@ -221,7 +223,7 @@ void Disp_Battery(int battery_capacity)
     lv_style_set_radius(&indic_style, 20);
 
     // 2. 创建 bar 对象
-    lv_obj_t * body = lv_bar_create(battery);
+    lv_obj_t* body = lv_bar_create(battery);
     lv_obj_remove_style_all(body);
     lv_obj_add_style(body, &bg_style, LV_PART_MAIN);
     lv_obj_add_style(body, &indic_style, LV_PART_INDICATOR);

@@ -1,7 +1,9 @@
 #ifndef _MY_GUI_
 #define _MY_GUI_
+#include "lvgl.h"
+#include <unistd.h>
 
-void mygui();
+void mygui(int bc);
 
 void Learn_Obj();
 
